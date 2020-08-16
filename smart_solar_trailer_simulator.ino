@@ -5,47 +5,54 @@ https://www.tinkercad.com/things/9JvVrD9O3RC-incredible-robo-wolt/editel?shareco
 
 /*-------------------------INCLUDES-------------------*/
 
-/*-----RTC_MODULE------*/
+/*-----RTC_MODULE------
 #include <Wire.h>
 #include <TimeLib.h>
 #include <DS1307RTC.h>
+*/
 
-/*----SD_CARD_MODULE---*/
+/*----SD_CARD_MODULE---
 #include <SPI.h>
 #include <SD.h>
+*/
 
-/*---TEMO_PROP_MODULE--*/
+/*---TEMO_PROP_MODULE--
 #include <OneWire.h>
 #include <DallasTemperature.h>
+*/
 
 
 /*-----------------------DEFINES---------------------*/
-/*---TEMP_PROBE_DATA_WIRE_PIN---*/
+/*---TEMP_PROBE_DATA_WIRE_PIN---
 #define ONE_WIRE_BUS 2
-
+*/
 
 /*---Voltage Measurement Pin----*/
 #define VOLTAGE_READING_PIN A0
 
-/*------SD CARD PIN----*/
+/*---Temperature Measurement Pin----*/
+#define TEMPERATURE_READING_PIN A1
+
+/*------SD CARD PIN----
 #define SDCARD_CHIP_SELECT_PIN 4
+*/
 /*--------------------GLOBAL_VARIABLES-----------------*/
 
-/* array for month names */
+/* array for month names 
 const char *monthName[12] = {
   "Jan", "Feb", "Mar", "Apr", "May", "Jun",
   "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
 };
+*/
 
-
-/*---used by Temp Sensor module---*/
+/*---used by Temp Sensor module---
 OneWire oneWire(ONE_WIRE_BUS);
 DallasTemperature tempSensor(&oneWire);
+*/
 
-
-/* structure for timestamp members */
+/* structure for timestamp members 
 tmElements_t tm;
-
+*/
 
 
 
@@ -73,12 +80,13 @@ void System_init(void) {
   /* begin the serial connection */
   Serial.begin(9600);
 
-  /* initialize RTC */
+  /* initialize RTC 
   RTC_init();
+  */
 
-  /* intialize temp sensor */
+  /* intialize temp sensor 
   tempSensor.begin();
-
+  */
 }
 
 
@@ -125,7 +133,7 @@ void System_logData(void)
   */
 }
 
-
+//Get battery charge level at end of each day for use at night
 float getDailyCharge(void)
 {
   float dailyCharge = getBatteryVoltage();
@@ -134,6 +142,7 @@ float getDailyCharge(void)
   
 }
 
+//adjust fridge power draw according to battery charge (may fully or partly discharge battery)
 float decideFridgeTemp(void){
   float dailyCharge = getDailyCharge();
   /*
@@ -147,8 +156,8 @@ float decideFridgeTemp(void){
    */
 }
 
-
-void maintaingFridgeTemp(void){
+//Keep fridge within temperature range that was set by 'decideFridgeTemp' func
+void fridgeControl(void){
 
   /*
    * if current temp is higher than the max limit, turn on the compresseor
@@ -166,6 +175,7 @@ void system_On_Off(void)
 }
 /*------------------------Temperature Measurement Section--------------------*/
 
+//Filter acurate fridge temperature sensor reading
 float getFridgeTemp(void)
 {
   float tempReading = 0;
@@ -185,6 +195,7 @@ float getFridgeTemp(void)
 
 */
 
+//Filter acurate battery voltage sensor reading
 float getBatteryVoltage(void)
 {
   int adcReading = 0;
@@ -205,7 +216,7 @@ float getBatteryVoltage(void)
     Outs         : SD_CARD_state
     Description  : intializied SD Card
 
-*/
+
 
 void SD_CARD_init(void)
 {
@@ -223,7 +234,7 @@ void SD_CARD_init(void)
 
   return SD_CARD_state;
 }
-
+*/
 /*--------------------------------RTC Functions Section----------------------*/
 
 /*
@@ -231,12 +242,12 @@ void SD_CARD_init(void)
     Args         : None
     Outs         : RTC_state
     Description  : intializied RTC with intializied time and date
-*/
+
 
 
 bool RTC_init(void)
 {
-  /* RTC state variables */
+  //RTC state variables
   bool parse  = false;
   bool config = false;
   bool RTC_state = false;
@@ -244,7 +255,7 @@ bool RTC_init(void)
   // get the date and time the compiler was run
   if (getDate(__DATE__) && getTime(__TIME__)) {
     parse = true;
-    // and configure the RTC with this info
+    // configure RTC with this info
     if (RTC.write(tm)) {
       config = true;
     }
@@ -270,17 +281,17 @@ bool RTC_init(void)
 
   RTC_state = parse && config;
 
-  /* return the state of RTC */
+  //return RTC state
   return RTC_state;
 }
-
+*/
 
 /*
     Function Name: RTC_getTimeStamp
     Args         : None
     Outs         : RTC_state
     Description  : get the date and time from RTC
-*/
+
 
 void RTC_getTimeStamp(void)
 {
@@ -318,14 +329,14 @@ void print2digits(int number) {
   }
   Serial.print(number);
 }
-
+*/
 
 /*
     Function Name: getTime
     Args         : None
     Outs         : operaion state
     Description  : get the compiler time
-*/
+
 bool getTime(const char *str)
 {
   int Hour, Min, Sec;
@@ -336,14 +347,14 @@ bool getTime(const char *str)
   tm.Second = Sec;
   return true;
 }
-
+*/
 
 /*
     Function Name: getDate
     Args         : None
     Outs         : operaion state
     Description  : get the compiler data
-*/
+
 
 bool getDate(const char *str)
 {
@@ -361,3 +372,4 @@ bool getDate(const char *str)
   tm.Year = CalendarYrToTm(Year);
   return true;
 }
+*/
