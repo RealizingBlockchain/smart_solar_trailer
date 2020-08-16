@@ -120,7 +120,7 @@ void System_logData(void)
   */
 }
 
-
+//Get battery charge level at end of each day for use at night
 float getDailyCharge(void)
 {
   float dailyCharge = getBatteryVoltage();
@@ -129,6 +129,7 @@ float getDailyCharge(void)
   
 }
 
+//adjust fridge power draw according to battery charge (may fully or partly discharge battery)
 float decideFridgeTemp(void){
   float dailyCharge = getDailyCharge();
   /*
@@ -142,7 +143,7 @@ float decideFridgeTemp(void){
    */
 }
 
-
+//Keep fridge within temperature range that was set by 'decideFridgeTemp' func
 void maintaingFridgeTemp(void){
 
   /*
@@ -161,6 +162,7 @@ void system_On_Off(void)
 }
 /*------------------------Temperature Measurement Section--------------------*/
 
+//Filter acurate fridge temperature sensor reading
 float getFridgeTemp(void)
 {
   float tempReading = 0;
@@ -180,6 +182,7 @@ float getFridgeTemp(void)
 
 */
 
+//Filter acurate battery voltage sensor reading
 float getBatteryVoltage(void)
 {
   int adcReading = 0;
