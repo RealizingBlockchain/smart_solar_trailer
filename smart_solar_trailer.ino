@@ -1,3 +1,11 @@
+/*-------------------------TASK CHECKLIST-------------------
+* Replace all delay commands with single thread "multi-tasking" if statements
+* For single line comments use //, not /* */
+* In the future, the system might be activated by occupation detection (door opens, motion detected) so when people use the house, fridge is active, otherwise appliance is disabled
+* Implement timelord library to track sunrise/sunset
+* Compensate time from sunrise sunset to sun disapearing behind mountains (house is in a valley) 
+*/
+
 /*-------------------------INCLUDES-------------------*/
 
 /*-----RTC_MODULE------*/
@@ -52,40 +60,45 @@ tmElements_t tm;
 
 
 void setup() {
-
   System_init();
-
 }
 
 
 void loop() {
   System_logData();
+  /* 
+  What else should be looping?
+  - Check if it's time to activate/deactivate a power consumer (at each loop is probably too much so after time passd) (currenty just fridge)
+  - optional - Ensure voltage is within normal discharge range (or being drained for unexpected reason, I.E. charging extra device(s))
+  - 
+  */
   delay(2000);
 }
 
 
 void System_init(void) {
-  /* begin the serial connection */
-  Serial.begin(9600);
+  //begin the serial connection */
+  Serial.begin(9600); //remove once logging to SD
 
   /* initialize RTC */
   RTC_init();
 
   /* intialize temp sensor */
   tempSensor.begin();
-
 }
 
+/*
 
 void System_logData(void)
 {
-
-  /* log function */
-  /*
+  // - Data logging doesn't need an independant function unless logging is needed that doesn't fit into the rest of the program. Otherwise logging should be done at appropriate action
+  //log function
+  
   float currentVoltage = 0;
   RTC_getTimeStamp();
-  currentVoltage = getBatteryVoltage();
-
+  
+  currentVoltage = getBatteryVoltage(); // - should be moved to getBatteryVoltage
+ function. Makes no sense to get battery voltage in logging function since it's outside of scope of function name and app becomes spaggeti
   String record = "";
 
   record += String(tm.Hour);
@@ -103,7 +116,7 @@ void System_logData(void)
   record += "Voltage Reading: ";
   record += String(currentVoltage);
   
-  File dataLoggerFile = SD.open("TestFile.txt", FILE_WRITE);
+  File dataLoggerFile = SD.open("TestFile.txt", FILE_WRITE); // - as disscussed, later switch to recording directly in .csv file
 
   if (dataLoggerFile) {
     dataLoggerFile.println(record);
@@ -123,9 +136,14 @@ void System_logData(void)
 //Get battery charge level at end of each day for use at night
 float getDailyCharge(void)
 {
-  float dailyCharge = getBatteryVoltage();
+  /* 
+  * - find a sunny day - compare last n days to find day with best charging which indicates likely clear (not cloudy) day. Data from this day gives exact indication of when charging happens at that time of year (mountains blocking sun in morning and evening making the charging day shorter)
+  * - Save table of sun times calibration for later years
+  * - 
+  */
+  float dailyCharge = getBatteryVoltage(); // - might be average of daily readings so one call a day might not be enough but for now ok
 
-  return dailyCharge;
+  return dailyCharge; // Save to SD. This data is stored log term
   
 }
 
@@ -133,9 +151,14 @@ float getDailyCharge(void)
 float decideFridgeTemp(void){
   float dailyCharge = getDailyCharge();
   /*
-   * 
-   * 
-   * 
+   * - Compressor consumption - Fridge compressor reduces approx 10mv charge level every 2 minutes (less while charging increses voltage during the day while fridge runs)
+   * - Compressor on time - for each minute the compressor runs, the fridge stays off for about 2 minutes on average (1 part on, 2 parts off).
+   * - Battery loses about 0.1v an hour (approx 20 minutes on time)
+   * - Battery range 9.6v (empty) - 12.6v (full), so full battery should (in theory) run fridge for about max 30 hours of compressor time. It probably runs a lot less
+   * - The higher the fridge temperature, the less energy it uses (the less cold it losses and needs to produce).
+   * - Fridge temperature should depend on available charge so battery is not depleted during the night (or on a cloudy day after)
+   * - 
+   *
    * some code to decide the fridge temp
    * 
    * 
@@ -150,10 +173,13 @@ void maintaingFridgeTemp(void){
    * if current temp is higher than the max limit, turn on the compresseor
    * and if it is lower, turn off the compresser
    * if it is between, do nothing
+   * on-time temperature range maybe the same at all temperature ranges or different, depending on testing
+   * Temp range should be saved long term (with time stamp) so we have a history of what the fridge was doing
    */
 }
 
-void system_On_Off(void)
+// Optional function to override cooling policy and make fridge extra cold (for what period of time?)
+void chargeOverride(void)
 {
   /*
    * if button is pressed, night system is on,
@@ -162,7 +188,7 @@ void system_On_Off(void)
 }
 /*------------------------Temperature Measurement Section--------------------*/
 
-//Filter acurate fridge temperature sensor reading
+//Filter and return more acurate fridge temperature sensor reading
 float getFridgeTemp(void)
 {
   float tempReading = 0;
@@ -174,6 +200,7 @@ float getFridgeTemp(void)
 
 /*-------------------------Voltage Measurement Section-----------------------*/
 
+//Filter  and return more acurate battery voltage sensor reading
 /*
     Function Name: VOLT_getVoltageReading
     Args         : None
@@ -182,7 +209,7 @@ float getFridgeTemp(void)
 
 */
 
-//Filter acurate battery voltage sensor reading
+
 float getBatteryVoltage(void)
 {
   int adcReading = 0;
