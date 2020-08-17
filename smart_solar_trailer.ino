@@ -26,7 +26,6 @@
 //TEMP_PROBE_DATA_WIRE_PIN
 #define ONE_WIRE_BUS 2
 
-
 //Voltage Measurement Pin
 #define VOLTAGE_READING_PIN A0
 
@@ -41,22 +40,18 @@ const char *monthName[12] = {
   "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
 };
 
-
 //used by Temp Sensor module
 OneWire oneWire(ONE_WIRE_BUS);
 DallasTemperature tempSensor(&oneWire);
-
 
 //structure for timestamp members
 tmElements_t tm;
 
 /*--------------------------------Main block------------------------------*/
 
-
 void setup() {
   System_init();
 }
-
 
 void loop() {
   System_logData();
@@ -68,7 +63,6 @@ void loop() {
   */
   delay(2000);
 }
-
 
 void System_init(void) {
   //begin the serial connection
@@ -82,7 +76,6 @@ void System_init(void) {
 }
 
 /*
-
 void System_logData(void)
 {
   // - Data logging doesn't need an independant function unless logging is needed that doesn't fit into the rest of the program. Otherwise logging should be done at appropriate action
@@ -92,7 +85,7 @@ void System_logData(void)
   RTC_getTimeStamp();
   
   currentVoltage = getBatteryVoltage(); // - should be moved to getBatteryVoltage
- function. Makes no sense to get battery voltage in logging function since it's outside of scope of function name and app becomes spaggeti
+  function. Makes no sense to get battery voltage in logging function since it's outside of scope of function name and app becomes spaggeti
   String record = "";
 
   record += String(tm.Hour);
@@ -127,7 +120,7 @@ void System_logData(void)
   */
 }
 
-//Get battery charge level at end of each day for use at night
+// Get battery charge level at end of each day for use at night
 float getDailyCharge(void)
 {
   /* 
@@ -141,7 +134,7 @@ float getDailyCharge(void)
   
 }
 
-//adjust fridge power draw according to battery charge (may fully or partly discharge battery)
+// adjust fridge power draw according to battery charge (may fully or partly discharge battery)
 float decideFridgeTemp(void){
   float dailyCharge = getDailyCharge();
   /*
@@ -160,18 +153,6 @@ float decideFridgeTemp(void){
    */
 }
 
-//Keep fridge within temperature range that was set by 'decideFridgeTemp' func
-void maintaingFridgeTemp(void){
-
-  /*
-   * if current temp is higher than the max limit, turn on the compresseor
-   * and if it is lower, turn off the compresser
-   * if it is between, do nothing
-   * on-time temperature range maybe the same at all temperature ranges or different, depending on testing
-   * Temp range should be saved long term (with time stamp) so we have a history of what the fridge was doing
-   */
-}
-
 // Optional function to override cooling policy and make fridge extra cold (for what period of time?)
 void chargeOverride(void)
 {
@@ -180,6 +161,7 @@ void chargeOverride(void)
    * if not, night system is off
    */
 }
+
 /*------------------------Measurements--------------------*/
 
 //Get filtered emperature measurment
@@ -203,6 +185,34 @@ float getBatteryVoltage(void){
 
   return voltageReading;
 }
+
+//Not sure if needed
+//Detect charging start and stop. Rapid voltage fluctioations indicate charging (connecting/disconnecting appliances also causes sudden voltage drops/jumps but we know when these events happen)
+void detectChargeStartStop(){
+  //Using an average of n voltage readings we can track voltage movements to detect charge start/stop if needed
+}
+
+/*------------------------Appliance control--------------------*/
+
+//Keep fridge within temperature range that was set by 'decideFridgeTemp' func
+void maintaingFridgeTemp(void){
+
+  /*
+   * if current temp is higher than the max limit, turn on the compresseor
+   * and if it is lower, turn off the compresser
+   * if it is between, do nothing
+   * on-time temperature range maybe the same at all temperature ranges or different, depending on testing
+   * Temp range should be saved long term (with time stamp) so we have a history of what the fridge was doing
+   */
+}
+
+
+
+
+
+
+
+
 
 /*--------------------------------SD CARD----------------------------*/
 
@@ -268,7 +278,6 @@ bool RTC_init(void)
 }
 
 //print date and time from RTC to serial monitor
-
 void RTC_getTimeStamp(void)
 {
   if (RTC.read(tm)) {
