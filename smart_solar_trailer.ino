@@ -1,62 +1,56 @@
-/*-------------------------TASK CHECKLIST-------------------
+/*-------------------------TASK LIST-------------------
+
 * Replace all delay commands with single thread "multi-tasking" if statements
-* For single line comments use //, not /* */
-* In the future, the system might be activated by occupation detection (door opens, motion detected) so when people use the house, fridge is active, otherwise appliance is disabled
+* Single line comments = //
+* In the future, the system might be activated by detecting if people are in the house (door opens, motion detected) so when people use the house, fridge is active, otherwise appliance is disabled
 * Implement timelord library to track sunrise/sunset
 * Compensate time from sunrise sunset to sun disapearing behind mountains (house is in a valley) 
 */
 
 /*-------------------------INCLUDES-------------------*/
 
-/*-----RTC_MODULE------*/
+//RTC_MODULES
 #include <Wire.h>
 #include <TimeLib.h>
 #include <DS1307RTC.h>
 
-/*----SD_CARD_MODULE---*/
+//SD_CARD_MODULES
 #include <SPI.h>
 #include <SD.h>
 
-/*---TEMO_PROP_MODULE--*/
+//TEMO_PROP_MODULE
 #include <OneWire.h>
 #include <DallasTemperature.h>
 
-
 /*-----------------------DEFINES---------------------*/
-/*---TEMP_PROBE_DATA_WIRE_PIN---*/
+//TEMP_PROBE_DATA_WIRE_PIN
 #define ONE_WIRE_BUS 2
 
 
-/*---Voltage Measurement Pin----*/
+//Voltage Measurement Pin
 #define VOLTAGE_READING_PIN A0
 
-/*------SD CARD PIN----*/
+//SD CARD PIN
 #define SDCARD_CHIP_SELECT_PIN 4
+
 /*--------------------GLOBAL_VARIABLES-----------------*/
 
-/* array for month names */
+//array for month names
 const char *monthName[12] = {
   "Jan", "Feb", "Mar", "Apr", "May", "Jun",
   "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
 };
 
 
-/*---used by Temp Sensor module---*/
+//used by Temp Sensor module
 OneWire oneWire(ONE_WIRE_BUS);
 DallasTemperature tempSensor(&oneWire);
 
 
-/* structure for timestamp members */
+//structure for timestamp members
 tmElements_t tm;
 
-
-
-
-
-
-/*--------------------------------------------------------------*
-                      FUNCTIONS DEFINITIONS
-  --------------------------------------------------------------*/
+/*--------------------------------Main block------------------------------*/
 
 
 void setup() {
@@ -77,13 +71,13 @@ void loop() {
 
 
 void System_init(void) {
-  //begin the serial connection */
+  //begin the serial connection
   Serial.begin(9600); //remove once logging to SD
 
-  /* initialize RTC */
+  //initialize RTC
   RTC_init();
 
-  /* intialize temp sensor */
+  //intialize temp sensor
   tempSensor.begin();
 }
 
@@ -186,9 +180,9 @@ void chargeOverride(void)
    * if not, night system is off
    */
 }
-/*------------------------Temperature Measurement Section--------------------*/
+/*------------------------Measurements--------------------*/
 
-//Filter and return more acurate fridge temperature sensor reading
+//Get filtered emperature measurment
 float getFridgeTemp(void)
 {
   float tempReading = 0;
@@ -197,21 +191,8 @@ float getFridgeTemp(void)
   return tempReading;
 }
 
-
-/*-------------------------Voltage Measurement Section-----------------------*/
-
-//Filter  and return more acurate battery voltage sensor reading
-/*
-    Function Name: VOLT_getVoltageReading
-    Args         : None
-    Outs         : None
-    Description  : get the voltage reading
-
-*/
-
-
-float getBatteryVoltage(void)
-{
+//get filtered voltage reading
+float getBatteryVoltage(void){
   int adcReading = 0;
   float voltageReading = 0;
 
@@ -223,15 +204,9 @@ float getBatteryVoltage(void)
   return voltageReading;
 }
 
-/*--------------------------------SD CARD Section----------------------------*/
-/*
-    Function Name: SD_CARD_init
-    Args         : None
-    Outs         : SD_CARD_state
-    Description  : intializied SD Card
+/*--------------------------------SD CARD----------------------------*/
 
-*/
-
+//intialise SD Card
 void SD_CARD_init(void)
 {
   bool SD_CARD_state = false;
@@ -249,16 +224,9 @@ void SD_CARD_init(void)
   return SD_CARD_state;
 }
 
-/*--------------------------------RTC Functions Section----------------------*/
+/*--------------------------------RTC Functions----------------------*/
 
-/*
-    Function Name: RTC_init
-    Args         : None
-    Outs         : RTC_state
-    Description  : intializied RTC with intializied time and date
-*/
-
-
+//intialise RTC with computers time and date
 bool RTC_init(void)
 {
   /* RTC state variables */
@@ -295,17 +263,11 @@ bool RTC_init(void)
 
   RTC_state = parse && config;
 
-  /* return the state of RTC */
+  //return RTC state
   return RTC_state;
 }
 
-
-/*
-    Function Name: RTC_getTimeStamp
-    Args         : None
-    Outs         : RTC_state
-    Description  : get the date and time from RTC
-*/
+//print date and time from RTC to serial monitor
 
 void RTC_getTimeStamp(void)
 {
@@ -344,13 +306,6 @@ void print2digits(int number) {
   Serial.print(number);
 }
 
-
-/*
-    Function Name: getTime
-    Args         : None
-    Outs         : operaion state
-    Description  : get the compiler time
-*/
 bool getTime(const char *str)
 {
   int Hour, Min, Sec;
@@ -361,14 +316,6 @@ bool getTime(const char *str)
   tm.Second = Sec;
   return true;
 }
-
-
-/*
-    Function Name: getDate
-    Args         : None
-    Outs         : operaion state
-    Description  : get the compiler data
-*/
 
 bool getDate(const char *str)
 {
